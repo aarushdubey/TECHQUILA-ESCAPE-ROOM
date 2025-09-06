@@ -1,26 +1,3 @@
-<body class="bg-gray-900 text-white">
-    <audio id="win-sound" src="win_sound.mp3"></audio>
-    <canvas id="matrix-bg" class="matrix-bg"></canvas>
-    ```
-
----
-
-### ## Step 3: Modify the JavaScript to Play the Sound
-
-Finally, you'll add two lines of JavaScript to play the sound at the right moment.
-
-1.  **Get the audio element:** At the top of the `<script>` section, add a line to get the `<audio>` tag you just created.
-2.  **Play the sound on win:** Find the `handleCellClick` function. Inside the `if` block that checks if the game is won, add the line `winSound.play();`.
-
-This will trigger the audio at the exact moment the win message appears.
-
----
-
-### ## Full Updated Code for `stage2.html`
-
-Here is the complete code for your `stage2.html` file with the changes included. Just remember to replace `"win_sound.mp3"` with the actual name of your audio file.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,7 +105,7 @@ Here is the complete code for your `stage2.html` file with the changes included.
         const aptitudePuzzle3View = document.getElementById('aptitude-puzzle-3-view');
         const memoryGameView = document.getElementById('memory-game-view');
         const winView = document.getElementById('win-view');
-        const winSound = document.getElementById('win-sound'); // <-- GET THE AUDIO ELEMENT
+        const winSound = document.getElementById('win-sound');
         
         // --- Generic Error Handler ---
         function showError(element, inputElement, message) {
@@ -245,7 +222,7 @@ Here is the complete code for your `stage2.html` file with the changes included.
                 if(currentLevel>=levels.length){ 
                     memoryGameView.classList.add('hidden'); 
                     winView.classList.remove('hidden');
-                    winSound.play(); // <-- PLAY THE SOUND ON WIN
+                    winSound.play();
                 }else{ 
                     startRound();
                 } 
