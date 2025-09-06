@@ -1,3 +1,26 @@
+<body class="bg-gray-900 text-white">
+    <audio id="win-sound" src="win_sound.mp3"></audio>
+    <canvas id="matrix-bg" class="matrix-bg"></canvas>
+    ```
+
+---
+
+### ## Step 3: Modify the JavaScript to Play the Sound
+
+Finally, you'll add two lines of JavaScript to play the sound at the right moment.
+
+1.  **Get the audio element:** At the top of the `<script>` section, add a line to get the `<audio>` tag you just created.
+2.  **Play the sound on win:** Find the `handleCellClick` function. Inside the `if` block that checks if the game is won, add the line `winSound.play();`.
+
+This will trigger the audio at the exact moment the win message appears.
+
+---
+
+### ## Full Updated Code for `stage2.html`
+
+Here is the complete code for your `stage2.html` file with the changes included. Just remember to replace `"win_sound.mp3"` with the actual name of your audio file.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +43,6 @@
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
-        /* Hides the arrows from number inputs */
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
@@ -32,6 +54,7 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white">
+    <audio id="win-sound" src="win_sound.mp3"></audio>
     <canvas id="matrix-bg" class="matrix-bg"></canvas>
     
     <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
@@ -105,6 +128,7 @@
         const aptitudePuzzle3View = document.getElementById('aptitude-puzzle-3-view');
         const memoryGameView = document.getElementById('memory-game-view');
         const winView = document.getElementById('win-view');
+        const winSound = document.getElementById('win-sound'); // <-- GET THE AUDIO ELEMENT
         
         // --- Generic Error Handler ---
         function showError(element, inputElement, message) {
@@ -168,9 +192,6 @@
         const submitAptitude2Btn = document.getElementById('submit-aptitude-2-btn');
         const aptitude2Error = document.getElementById('aptitude-2-error');
         submitAptitude2Btn.addEventListener('click', () => {
-            // The series is +3, -2, +3, -2... The next number is 9 + 3 = 12. No, wait.
-            // Alt series 1: 7, 8, 9, ... next is 10.
-            // Alt series 2: 10, 11, 12, ...
             if (parseInt(aptitude2AnswerInput.value) === 10) {
                  showSuccess(aptitude2Error, aptitudePuzzle3View, aptitudePuzzle2View, 'SEQUENCE VALIDATED');
             } else {
@@ -183,8 +204,6 @@
         const submitAptitude3Btn = document.getElementById('submit-aptitude-3-btn');
         const aptitude3Error = document.getElementById('aptitude-3-error');
         submitAptitude3Btn.addEventListener('click', () => {
-            // N->O, E->F ... it's a +1 shift cipher
-            // S->T, Y->Z, S->T, T->U, E->F, M->N
             if (aptitude3AnswerInput.value.trim().toUpperCase() === 'TZTUFN') {
                 showSuccess(aptitude3Error, memoryGameView, aptitudePuzzle3View, 'TRANSMISSION ACCEPTED');
             } else {
@@ -202,7 +221,36 @@
         startBtn.addEventListener('click', startGame);
         function startGame() { startBtn.classList.add('hidden'); statusText.classList.remove('hidden'); currentLevel = 0; startRound(); }
         async function startRound() { isPlayerTurn=false; userSequence=[]; statusText.textContent=`Round ${currentLevel+1}/${levels.length}`; gridContainer.style.pointerEvents='none'; sequence=Array.from({length:levels[currentLevel]},()=>Math.floor(Math.random()*16)); await sleep(1e3); statusText.textContent='Watch carefully...'; await sleep(1e3); for(const i of sequence){ const c=gridContainer.children[i]; c.classList.add('active'); await sleep(500); c.classList.remove('active'); await sleep(250) } statusText.textContent='Your turn!'; isPlayerTurn=true; gridContainer.style.pointerEvents='auto' }
-        async function handleCellClick(i) { if(!isPlayerTurn)return; const c=gridContainer.children[i]; userSequence.push(i); if(userSequence[userSequence.length-1]!==sequence[userSequence.length-1]){ c.classList.add('incorrect'); statusText.textContent='Mistake! Try this round again.'; isPlayerTurn=false; await sleep(1500); c.classList.remove('incorrect'); startRound(); return } c.classList.add('correct'); await sleep(200); c.classList.remove('correct'); if(userSequence.length===sequence.length){ isPlayerTurn=false; statusText.textContent='Correct!'; await sleep(1e3); currentLevel++; if(currentLevel>=levels.length){ memoryGameView.classList.add('hidden'); winView.classList.remove('hidden') }else{ startRound() } } }
+        async function handleCellClick(i) { 
+            if(!isPlayerTurn) return; 
+            const c=gridContainer.children[i]; 
+            userSequence.push(i); 
+            if(userSequence[userSequence.length-1]!==sequence[userSequence.length-1]){ 
+                c.classList.add('incorrect'); 
+                statusText.textContent='Mistake! Try this round again.'; 
+                isPlayerTurn=false; 
+                await sleep(1500); 
+                c.classList.remove('incorrect'); 
+                startRound(); 
+                return 
+            } 
+            c.classList.add('correct'); 
+            await sleep(200); 
+            c.classList.remove('correct'); 
+            if(userSequence.length===sequence.length){ 
+                isPlayerTurn=false; 
+                statusText.textContent='Correct!'; 
+                await sleep(1e3); 
+                currentLevel++; 
+                if(currentLevel>=levels.length){ 
+                    memoryGameView.classList.add('hidden'); 
+                    winView.classList.remove('hidden');
+                    winSound.play(); // <-- PLAY THE SOUND ON WIN
+                }else{ 
+                    startRound();
+                } 
+            } 
+        }
         function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
         // --- Matrix Background Effect ---
