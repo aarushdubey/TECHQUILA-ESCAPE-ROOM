@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* The 'overflow: hidden;' property has been removed from the body tag below */
         body { font-family: 'Inter', sans-serif; }
         .tech-mono { font-family: 'Share Tech Mono', monospace; }
         .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #0d1117; }
@@ -20,127 +19,88 @@
         .switch::before { content: ''; position: absolute; width: 21px; height: 21px; background: #f0f0f0; border-radius: 50%; top: 0px; left: 2px; transition: .3s; }
         .switch.on { background: #22c55e; }
         .switch.on::before { transform: translateX(25px); }
-
-        /* --- ADDED FOR VIEW SWITCHER --- */
-        #view-switcher-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
-        #view-toggle { appearance: none; width: 50px; height: 25px; background: #06b6d4; border-radius: 12.5px; position: relative; outline: none; transition: .3s; }
-        #view-toggle::before { content: ''; position: absolute; width: 21px; height: 21px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: .3s; }
-        #view-toggle:checked { background: #4f46e5; }
-        #view-toggle:checked::before { transform: translateX(25px); }
-        body.mobile-view #view-wrapper { max-width: 414px !important; margin: 2rem auto; }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
     <canvas id="matrix-bg" class="matrix-bg"></canvas>
 
-    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 1000; background-color: rgba(17, 24, 39, 0.8); padding: 0.5rem 1rem; border-radius: 1rem; border: 1px solid #374151;">
-        <label id="view-switcher-label" class="tech-mono text-sm">
-            <span class="text-cyan-400">Mobile</span>
-            <input type="checkbox" id="view-toggle">
-            <span class="text-indigo-400">Desktop</span>
-        </label>
-    </div>
+    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
+        <div class="w-full max-w-6xl bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg shadow-2xl shadow-green-500/10 p-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-green-400 mb-4 text-center tech-mono">Stage 1: System Reboot Sequence</h1>
+            
+            <div class="flex flex-col md:flex-row items-center justify-between bg-gray-900/50 p-4 rounded-md border border-gray-700 mb-6">
+                 <h2 class="text-xl tech-mono text-yellow-400 mb-2 md:mb-0">ACCESS CODE</h2>
+                 <div class="flex space-x-2 sm:space-x-4">
+                     <div id="code-1" class="code-display">?</div>
+                     <div id="code-2" class="code-display">?</div>
+                     <div id="code-3" class="code-display">?</div>
+                     <div id="code-4" class="code-display">?</div>
+                 </div>
+                 <div class="flex items-center space-x-3 mt-4 md:mt-0">
+                      <span class="font-bold">MAIN POWER</span>
+                      <div id="main-power" class="switch"></div>
+                 </div>
+            </div>
 
-    <div id="view-wrapper">
-        <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
-            <div class="w-full max-w-6xl bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg shadow-2xl shadow-green-500/10 p-6">
-                <h1 class="text-2xl md:text-3xl font-bold text-green-400 mb-4 text-center tech-mono">Stage 1: System Reboot Sequence</h1>
-                
-                <div class="flex flex-col md:flex-row items-center justify-between bg-gray-900/50 p-4 rounded-md border border-gray-700 mb-6">
-                     <h2 class="text-xl tech-mono text-yellow-400 mb-2 md:mb-0">ACCESS CODE</h2>
-                     <div class="flex space-x-4">
-                         <div id="code-1" class="code-display">?</div>
-                         <div id="code-2" class="code-display">?</div>
-                         <div id="code-3" class="code-display">?</div>
-                         <div id="code-4" class="code-display">?</div>
-                     </div>
-                     <div class="flex items-center space-x-3 mt-4 md:mt-0">
-                          <span class="font-bold">MAIN POWER</span>
-                          <div id="main-power" class="switch"></div>
-                     </div>
+            <div id="main-panels" class="grid grid-cols-1 md:grid-cols-3 gap-6 panel-disabled">
+                <div class="bg-gray-900/50 p-4 rounded-md border border-gray-700 space-y-4">
+                    <h3 class="text-lg tech-mono text-cyan-400 text-center">Core Systems Check</h3>
+                    <button data-task="1" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">1. Scan Network Routes</button>
+                    <button data-task="2" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">2. Verify Memory Integrity</button>
+                    <button data-task="3" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">3. Initialize I/O Ports</button>
+                    <button data-task="4" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">4. Check Core Processor</button>
+                    <p class="text-xs text-center text-gray-500">Clue appears in the Terminal.</p>
                 </div>
-    
-                <div id="main-panels" class="grid grid-cols-1 md:grid-cols-3 gap-6 panel-disabled">
-                    <div class="bg-gray-900/50 p-4 rounded-md border border-gray-700 space-y-4">
-                        <h3 class="text-lg tech-mono text-cyan-400 text-center">Core Systems Check</h3>
-                        <button data-task="1" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">1. Scan Network Routes</button>
-                        <button data-task="2" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">2. Verify Memory Integrity</button>
-                        <button data-task="3" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">3. Initialize I/O Ports</button>
-                        <button data-task="4" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded task-btn">4. Check Core Processor</button>
-                        <p class="text-xs text-center text-gray-500">Clue appears in the Terminal.</p>
-                    </div>
-    
-                    <div class="bg-gray-900/50 p-4 rounded-md border border-gray-700 space-y-4">
-                        <h3 class="text-lg tech-mono text-cyan-400 text-center">HINTS BELOW IN TERMINAL</h3>
-                        <textarea id="terminal" class="w-full h-40 tech-mono bg-black text-green-500 text-sm p-2 rounded resize-none" readonly>// POWER OFF //</textarea>
-                        <div class="flex justify-around items-center">
-                            <div class="text-center">
-                                <div class="lever-container"><div data-lever="1" class="lever"></div></div> L1
-                            </div>
-                            <div class="text-center">
-                                <div class="lever-container"><div data-lever="2" class="lever"></div></div> L2
-                            </div>
-                            <div class="text-center">
-                                <div class="lever-container"><div data-lever="3" class="lever"></div></div> L3
-                            </div>
+
+                <div class="bg-gray-900/50 p-4 rounded-md border border-gray-700 space-y-4">
+                    <h3 class="text-lg tech-mono text-cyan-400 text-center">HINTS BELOW IN TERMINAL</h3>
+                    <textarea id="terminal" class="w-full h-40 tech-mono bg-black text-green-500 text-sm p-2 rounded resize-none" readonly>// POWER OFF //</textarea>
+                    <div class="flex justify-around items-center">
+                        <div class="text-center">
+                            <div class="lever-container"><div data-lever="1" class="lever"></div></div> L1
+                        </div>
+                        <div class="text-center">
+                            <div class="lever-container"><div data-lever="2" class="lever"></div></div> L2
+                        </div>
+                        <div class="text-center">
+                            <div class="lever-container"><div data-lever="3" class="lever"></div></div> L3
                         </div>
                     </div>
-    
-                    <div class="bg-gray-900/50 p-4 rounded-md border border-gray-700 space-y-4">
-                         <h3 class="text-lg tech-mono text-cyan-400 text-center">Subsystems Control</h3>
-                         <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
-                            <span>Coolant Pump</span>
-                            <div id="coolant-switch" class="switch"></div>
+                </div>
+
+                <div class="bg-gray-900/50 p-4 rounded-md border border-gray-700 space-y-4">
+                     <h3 class="text-lg tech-mono text-cyan-400 text-center">Subsystems Control</h3>
+                     <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                        <span>Coolant Pump</span>
+                        <div id="coolant-switch" class="switch"></div>
+                     </div>
+                     <div class="text-center">
+                         <label for="temp-slider" class="block">Core Temperature (<span id="slider-val">20</span>°C)</label>
+                         <input type="range" id="temp-slider" min="20" max="100" value="20" class="w-full">
+                     </div>
+                     <div class="grid grid-cols-3 gap-2">
+                        <button class="bg-gray-600 p-2 rounded router-btn" data-router="1">Router 1</button>
+                        <button class="bg-gray-600 p-2 rounded router-btn" data-router="2">Router 2</button>
+                        <button class="bg-gray-600 p-2 rounded router-btn" data-router="3">Router 3</button>
+                     </div>
+                     
+                     <div id="math-puzzle-container" class="hidden space-y-2 pt-4">
+                         <p class="text-center text-yellow-400 tech-mono">Final Security Verification</p>
+                         <div class="text-xs text-center p-2 bg-black rounded border border-gray-600">
+                            <p>To calibrate power flow, calculate the final value:</p>
+                            <p>Start with the <strong>Core Temperature</strong> (Code 3) and subtract the <strong>Authentication value</strong> (Code 2). Then, add the <strong>amplified Network value</strong> (Code 1 multiplied by 3). Finally, subtract the <strong>Router checksum</strong> (Code 4).</p>
                          </div>
-                         <div class="text-center">
-                             <label for="temp-slider" class="block">Core Temperature (<span id="slider-val">20</span>°C)</label>
-                             <input type="range" id="temp-slider" min="20" max="100" value="20" class="w-full">
-                         </div>
-                         <div class="grid grid-cols-3 gap-2">
-                            <button class="bg-gray-600 p-2 rounded router-btn" data-router="1">Router 1</button>
-                            <button class="bg-gray-600 p-2 rounded router-btn" data-router="2">Router 2</button>
-                            <button class="bg-gray-600 p-2 rounded router-btn" data-router="3">Router 3</button>
-                         </div>
-                         
-                         <div id="math-puzzle-container" class="hidden space-y-2 pt-4">
-                             <p class="text-center text-yellow-400 tech-mono">Final Security Verification</p>
-                             <div class="text-xs text-center p-2 bg-black rounded border border-gray-600">
-                                <p>To calibrate power flow, calculate the final value:</p>
-                                <p>Start with the <strong>Core Temperature</strong> (Code 3) and subtract the <strong>Authentication value</strong> (Code 2). Then, add the <strong>amplified Network value</strong> (Code 1 multiplied by 3). Finally, subtract the <strong>Router checksum</strong> (Code 4).</p>
-                             </div>
-                             <input id="math-answer" type="text" class="w-full bg-black text-green-500 tech-mono p-2 rounded border border-gray-600 text-center" placeholder="Enter Calibration Value">
-                             <button id="submit-math-btn" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded">Verify</button>
-                         </div>
-                         
-                         <button id="next-stage-btn" class="w-full bg-yellow-600 text-black font-bold p-3 rounded opacity-0 pointer-events-none transition-opacity">PROCEED TO STAGE 2</button>
-                    </div>
+                         <input id="math-answer" type="text" class="w-full bg-black text-green-500 tech-mono p-2 rounded border border-gray-600 text-center" placeholder="Enter Calibration Value">
+                         <button id="submit-math-btn" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded">Verify</button>
+                     </div>
+                     
+                     <button id="next-stage-btn" class="w-full bg-yellow-600 text-black font-bold p-3 rounded opacity-0 pointer-events-none transition-opacity">PROCEED TO STAGE 2</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- ADDED: View Switcher Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const viewToggle = document.getElementById('view-toggle');
-            const setViewMode = (mode) => {
-                if (mode === 'mobile') {
-                    document.body.classList.add('mobile-view');
-                    viewToggle.checked = false;
-                } else {
-                    document.body.classList.remove('mobile-view');
-                    viewToggle.checked = true;
-                }
-            };
-            viewToggle.addEventListener('change', () => {
-                const newMode = viewToggle.checked ? 'desktop' : 'mobile';
-                localStorage.setItem('viewMode', newMode);
-                setViewMode(newMode);
-            });
-            const savedMode = localStorage.getItem('viewMode') || 'desktop';
-            setViewMode(savedMode);
-        });
-        
         // --- State Management ---
         const state = {
             power: false,
