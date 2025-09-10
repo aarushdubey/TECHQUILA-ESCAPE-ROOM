@@ -28,76 +28,115 @@
         input[type="number"] {
             -moz-appearance: textfield;
         }
+
+        /* --- ADDED FOR VIEW SWITCHER --- */
+        #view-switcher-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        #view-toggle { appearance: none; width: 50px; height: 25px; background: #06b6d4; border-radius: 12.5px; position: relative; outline: none; transition: .3s; }
+        #view-toggle::before { content: ''; position: absolute; width: 21px; height: 21px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: .3s; }
+        #view-toggle:checked { background: #4f46e5; }
+        #view-toggle:checked::before { transform: translateX(25px); }
+        body.mobile-view #view-wrapper { max-width: 414px !important; margin: 2rem auto; }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
     <audio id="win-sound" src="win_sound.mp3"></audio>
     <canvas id="matrix-bg" class="matrix-bg"></canvas>
     
-    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
-        <div id="puzzle-container" class="w-full max-w-md bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-8 text-center">
-            
-            <div id="logic-puzzle-view">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 1: Logic Gate</h1>
-                <p class="text-gray-400 mb-4">A system function is defined as f(x) = (3 times x) + 7. If the function returns a value of 52, what was the original input `x`?</p>
-                <div class="flex gap-2 justify-center mt-6">
-                    <input id="logic-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="INPUT">
-                    <button id="submit-logic-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Verify</button>
-                </div>
-                <p id="logic-error" class="text-red-500 mt-3 h-5 text-sm tech-mono"></p>
-            </div>
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 1000; background-color: rgba(17, 24, 39, 0.8); padding: 0.5rem 1rem; border-radius: 1rem; border: 1px solid #374151;">
+        <label id="view-switcher-label" class="tech-mono text-sm">
+            <span class="text-cyan-400">Mobile</span>
+            <input type="checkbox" id="view-toggle">
+            <span class="text-indigo-400">Desktop</span>
+        </label>
+    </div>
 
-            <div id="aptitude-puzzle-1-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 2: Anomaly Detection</h1>
-                <p class="text-gray-400 mb-4">One of these items is not like the others. Identify the anomaly in the system.</p>
-                <div id="aptitude-options" class="grid grid-cols-2 gap-4 mt-6">
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="CPU">CPU</button>
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="GPU">GPU</button>
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="RAM">RAM</button>
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="HTTP">HTTP</button>
+    <div id="view-wrapper">
+        <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
+            <div id="puzzle-container" class="w-full max-w-md bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-8 text-center">
+                
+                <div id="logic-puzzle-view">
+                    <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 1: Logic Gate</h1>
+                    <p class="text-gray-400 mb-4">A system function is defined as f(x) = (3 times x) + 7. If the function returns a value of 52, what was the original input `x`?</p>
+                    <div class="flex gap-2 justify-center mt-6">
+                        <input id="logic-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="INPUT">
+                        <button id="submit-logic-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Verify</button>
+                    </div>
+                    <p id="logic-error" class="text-red-500 mt-3 h-5 text-sm tech-mono"></p>
                 </div>
-                <p id="aptitude-1-error" class="mt-4 h-5 text-sm tech-mono"></p>
-            </div>
 
-            <div id="aptitude-puzzle-2-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 3: Pattern Recognition</h1>
-                <p class="text-gray-400 mb-4">Analyze the following numerical sequence and determine the next number: <br><span class="text-yellow-300 tech-mono text-lg mt-2 inline-block">7, 10, 8, 11, 9, 12, ?</span></p>
-                <div class="flex gap-2 justify-center mt-6">
-                    <input id="aptitude-2-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="ANSWER">
-                    <button id="submit-aptitude-2-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Submit</button>
+                <div id="aptitude-puzzle-1-view" class="hidden">
+                    <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 2: Anomaly Detection</h1>
+                    <p class="text-gray-400 mb-4">One of these items is not like the others. Identify the anomaly in the system.</p>
+                    <div id="aptitude-options" class="grid grid-cols-2 gap-4 mt-6">
+                        <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="CPU">CPU</button>
+                        <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="GPU">GPU</button>
+                        <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="RAM">RAM</button>
+                        <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="HTTP">HTTP</button>
+                    </div>
+                    <p id="aptitude-1-error" class="mt-4 h-5 text-sm tech-mono"></p>
                 </div>
-                <p id="aptitude-2-error" class="mt-3 h-5 text-sm tech-mono"></p>
-            </div>
 
-            <div id="aptitude-puzzle-3-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 4: Code Logic</h1>
-                <p class="text-gray-400 mb-4">In a certain cipher, `NETWORK` is coded as `OFUXPSL`. Using the same logic, how would you encode the word `SYSTEM`?</p>
-                <div class="flex gap-2 justify-center mt-6">
-                    <input id="aptitude-3-answer" type="text" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-40 tech-mono text-lg uppercase focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="CIPHERTEXT">
-                    <button id="submit-aptitude-3-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Transmit</button>
+                <div id="aptitude-puzzle-2-view" class="hidden">
+                    <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 3: Pattern Recognition</h1>
+                    <p class="text-gray-400 mb-4">Analyze the following numerical sequence and determine the next number: <br><span class="text-yellow-300 tech-mono text-lg mt-2 inline-block">7, 10, 8, 11, 9, 12, ?</span></p>
+                    <div class="flex gap-2 justify-center mt-6">
+                        <input id="aptitude-2-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="ANSWER">
+                        <button id="submit-aptitude-2-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Submit</button>
+                    </div>
+                    <p id="aptitude-2-error" class="mt-3 h-5 text-sm tech-mono"></p>
                 </div>
-                <p id="aptitude-3-error" class="mt-3 h-5 text-sm tech-mono"></p>
-            </div>
 
-            <div id="memory-game-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 5: Memory Matrix</h1>
-                <p class="text-gray-400 mb-4">The final security layer is a sequence lock. Watch the pattern and repeat it. Complete 4 rounds to pass.</p>
-                <div id="status-bar" class="h-8 mb-4">
-                    <button id="startBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Start Final Stage</button>
-                    <p id="status-text" class="hidden text-xl text-yellow-300 tech-mono"></p>
+                <div id="aptitude-puzzle-3-view" class="hidden">
+                    <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 4: Code Logic</h1>
+                    <p class="text-gray-400 mb-4">In a certain cipher, `NETWORK` is coded as `OFUXPSL`. Using the same logic, how would you encode the word `SYSTEM`?</p>
+                    <div class="flex gap-2 justify-center mt-6">
+                        <input id="aptitude-3-answer" type="text" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-40 tech-mono text-lg uppercase focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="CIPHERTEXT">
+                        <button id="submit-aptitude-3-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Transmit</button>
+                    </div>
+                    <p id="aptitude-3-error" class="mt-3 h-5 text-sm tech-mono"></p>
                 </div>
-                <div id="pattern-grid" class="pattern-grid w-[350px] mx-auto"></div>
-            </div>
-            
-            <div id="win-view" class="hidden text-center">
-                 <h1 class="text-4xl font-bold text-yellow-300 tech-mono mb-4">BREACH SUCCESSFUL!</h1>
-                 <p class="text-lg text-gray-300">You've bypassed all security layers.</p>
-                 <p class="mt-4 bg-black p-4 rounded-lg text-green-400">Show this message to a club organizer to claim your victory!</p>
+
+                <div id="memory-game-view" class="hidden">
+                    <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 5: Memory Matrix</h1>
+                    <p class="text-gray-400 mb-4">The final security layer is a sequence lock. Watch the pattern and repeat it. Complete 4 rounds to pass.</p>
+                    <div id="status-bar" class="h-8 mb-4">
+                        <button id="startBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Start Final Stage</button>
+                        <p id="status-text" class="hidden text-xl text-yellow-300 tech-mono"></p>
+                    </div>
+                    <div id="pattern-grid" class="pattern-grid w-[350px] mx-auto"></div>
+                </div>
+                
+                <div id="win-view" class="hidden text-center">
+                     <h1 class="text-4xl font-bold text-yellow-300 tech-mono mb-4">BREACH SUCCESSFUL!</h1>
+                     <p class="text-lg text-gray-300">You've bypassed all security layers.</p>
+                     <p class="mt-4 bg-black p-4 rounded-lg text-green-400">Show this message to a club organizer to claim your victory!</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- ADDED: View Switcher Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const viewToggle = document.getElementById('view-toggle');
+            const setViewMode = (mode) => {
+                if (mode === 'mobile') {
+                    document.body.classList.add('mobile-view');
+                    viewToggle.checked = false;
+                } else {
+                    document.body.classList.remove('mobile-view');
+                    viewToggle.checked = true;
+                }
+            };
+            viewToggle.addEventListener('change', () => {
+                const newMode = viewToggle.checked ? 'desktop' : 'mobile';
+                localStorage.setItem('viewMode', newMode);
+                setViewMode(newMode);
+            });
+            const savedMode = localStorage.getItem('viewMode') || 'desktop';
+            setViewMode(savedMode);
+        });
+
         // --- Puzzle & Game Views ---
         const logicPuzzleView = document.getElementById('logic-puzzle-view');
         const aptitudePuzzle1View = document.getElementById('aptitude-puzzle-1-view');
