@@ -1,321 +1,485 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Tech Club - Puzzle Challenge</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; overflow: hidden; }
-        .tech-mono { font-family: 'Share Tech Mono', monospace; }
-        .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #0d1117; }
-        .pattern-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .grid-cell { width: 80px; height: 80px; background-color: #374151; border: 2px solid #1f2937; border-radius: 8px; cursor: pointer; transition: background-color 0.1s ease; }
-        .grid-cell.active { background-color: #60a5fa; box-shadow: 0 0 20px #60a5fa; transform: scale(1.05); }
-        .grid-cell.correct, .btn-correct { background-color: #22c55e !important; }
-        .grid-cell.incorrect, .input-incorrect, .btn-incorrect { background-color: #ef4444 !important; animation: shake 0.3s; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        input[type="number"]::-webkit-inner-spin-button, 
-        input[type="number"]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-    </style>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Tech Club - Puzzle Challenge</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+
+        body { font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        .tech-mono { font-family: 'Share Tech Mono', monospace; }
+
+        .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #0d1117; }
+
+        .pattern-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+        .grid-cell { width: 80px; height: 80px; background-color: #374151; border: 2px solid #1f2937; border-radius: 8px; cursor: pointer; transition: background-color 0.1s ease; }
+
+        .grid-cell.active { background-color: #60a5fa; box-shadow: 0 0 20px #60a5fa; transform: scale(1.05); }
+
+        .grid-cell.correct, .btn-correct { background-color: #22c55e !important; }
+
+        .grid-cell.incorrect, .input-incorrect, .btn-incorrect { background-color: #ef4444 !important; animation: shake 0.3s; }
+
+        @keyframes shake {
+
+            0%, 100% { transform: translateX(0); }
+
+            25% { transform: translateX(-5px); }
+
+            75% { transform: translateX(5px); }
+
+        }
+
+        input[type="number"]::-webkit-inner-spin-button, 
+
+        input[type="number"]::-webkit-outer-spin-button { 
+
+            -webkit-appearance: none; 
+
+            margin: 0; 
+
+        }
+
+        input[type="number"] {
+
+            -moz-appearance: textfield;
+
+        }
+
+    </style>
+
 </head>
+
 <body class="bg-gray-900 text-white">
-    <audio id="win-sound" src="https://www.myinstants.com/media/sounds/cod-mw-level-up.mp3" preload="auto"></audio>
-    <canvas id="matrix-bg" class="matrix-bg"></canvas>
-    
-    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
-        <div id="puzzle-container" class="w-full max-w-md bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-8 text-center">
-            
-            <div id="logic-puzzle-view">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 1: Logic Gate</h1>
-                <p class="text-gray-400 mb-4">A system function is defined as f(x) = (3 times x) + 7. If the function returns a value of 52, what was the original input `x`?</p>
-                <div class="flex gap-2 justify-center mt-6">
-                    <input id="logic-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="INPUT">
-                    <button id="submit-logic-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Verify</button>
-                </div>
-                <p id="logic-error" class="text-red-500 mt-3 h-5 text-sm tech-mono"></p>
-            </div>
 
-            <div id="code-puzzle-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 2: Code Execution</h1>
-                <p class="text-gray-400 mb-4">Analyze this C++ snippet and predict the final value of the variable `sum`.</p>
-                <pre class="bg-black/50 text-left p-3 rounded-md text-sm my-4"><code class="text-white">int sum = 0;
-for (int i = 1; i <= 5; i++) {
-    sum = sum + i;
-}</code></pre>
-                <div class="flex gap-2 justify-center mt-6">
-                    <input id="code-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="VALUE">
-                    <button id="submit-code-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Execute</button>
-                </div>
-                <p id="code-error" class="mt-3 h-5 text-sm tech-mono"></p>
-            </div>
+    <audio id="win-sound" src="win_sound.mp3"></audio>
 
-            <div id="ds-puzzle-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 3: Data Structures</h1>
-                <p class="text-gray-400 mb-4">Which data structure operates on a "Last-In, First-Out" (LIFO) principle?</p>
-                <div id="ds-options" class="grid grid-cols-2 gap-4 mt-6">
-                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="Queue">Queue</button>
-                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="Stack">Stack</button>
-                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="Array">Array</button>
-                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="LinkedList">Linked List</button>
-                </div>
-                <p id="ds-error" class="mt-4 h-5 text-sm tech-mono"></p>
-            </div>
+    <canvas id="matrix-bg" class="matrix-bg"></canvas>
 
-            <div id="aptitude-puzzle-1-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 4: Anomaly Detection</h1>
-                <p class="text-gray-400 mb-4">One of these items is not like the others. Identify the anomaly in the system.</p>
-                <div id="aptitude-options" class="grid grid-cols-2 gap-4 mt-6">
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="CPU">CPU</button>
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="GPU">GPU</button>
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="RAM">RAM</button>
-                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="HTTP">HTTP</button>
-                </div>
-                <p id="aptitude-1-error" class="mt-4 h-5 text-sm tech-mono"></p>
-            </div>
+    
 
-            <div id="aptitude-puzzle-2-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 5: Pattern Recognition</h1>
-                <p class="text-gray-400 mb-4">Analyze the following numerical sequence and determine the next number: <br><span class="text-yellow-300 tech-mono text-lg mt-2 inline-block">7, 10, 8, 11, 9, 12, ?</span></p>
-                <div class="flex gap-2 justify-center mt-6">
-                    <input id="aptitude-2-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="ANSWER">
-                    <button id="submit-aptitude-2-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Submit</button>
-                </div>
-                <p id="aptitude-2-error" class="mt-3 h-5 text-sm tech-mono"></p>
-            </div>
+    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
 
-            <div id="aptitude-puzzle-3-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 6: Code Logic</h1>
-                <p class="text-gray-400 mb-4">In a certain cipher, `NETWORK` is coded as `OFUXPSL`. Using the same logic, how would you encode the word `SYSTEM`?</p>
-                <div class="flex gap-2 justify-center mt-6">
-                    <input id="aptitude-3-answer" type="text" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-40 tech-mono text-lg uppercase focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="CIPHERTEXT">
-                    <button id="submit-aptitude-3-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Transmit</button>
-                </div>
-                <p id="aptitude-3-error" class="mt-3 h-5 text-sm tech-mono"></p>
-            </div>
+        <div id="puzzle-container" class="w-full max-w-md bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-8 text-center">
 
-            <div id="memory-game-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 7: Memory Matrix</h1>
-                <p class="text-gray-400 mb-4">The final security layer is a sequence lock. Watch the pattern and repeat it. Complete 4 rounds to pass.</p>
-                <div id="status-bar" class="h-8 mb-4">
-                    <button id="startBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Start Final Stage</button>
-                    <p id="status-text" class="hidden text-xl text-yellow-300 tech-mono"></p>
-                </div>
-                <div id="pattern-grid" class="pattern-grid w-[350px] mx-auto"></div>
-            </div>
-            
-            <div id="win-view" class="hidden text-center">
-                 <h1 class="text-4xl font-bold text-yellow-300 tech-mono mb-4">BREACH SUCCESSFUL!</h1>
-                 <p class="text-lg text-gray-300">You've bypassed all security layers.</p>
-                 <p class="mt-4 bg-black p-4 rounded-lg text-green-400">Show this message to a club organizer to claim your victory!</p>
-            </div>
-        </div>
-    </div>
+            
 
-    <script>
-        // --- Puzzle & Game Views ---
-        const logicPuzzleView = document.getElementById('logic-puzzle-view');
-        const codePuzzleView = document.getElementById('code-puzzle-view');
-        const dsPuzzleView = document.getElementById('ds-puzzle-view');
-        const aptitudePuzzle1View = document.getElementById('aptitude-puzzle-1-view');
-        const aptitudePuzzle2View = document.getElementById('aptitude-puzzle-2-view');
-        const aptitudePuzzle3View = document.getElementById('aptitude-puzzle-3-view');
-        const memoryGameView = document.getElementById('memory-game-view');
-        const winView = document.getElementById('win-view');
-        const winSound = document.getElementById('win-sound');
-        
-        // --- Generic Utility Functions ---
-        function showError(element, inputElement, message) {
-            element.textContent = message;
-            element.classList.remove('text-green-500');
-            element.classList.add('text-red-500');
-            if (inputElement) {
-                inputElement.classList.add('input-incorrect');
-                if (inputElement.tagName === 'INPUT') inputElement.value = '';
-            }
+            <div id="logic-puzzle-view">
 
-            setTimeout(() => {
-                element.textContent = '';
-                if (inputElement) inputElement.classList.remove('input-incorrect');
-            }, 1200);
-        }
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 1: Logic Gate</h1>
 
-        function showSuccess(element, nextView, currentView, message) {
-              element.textContent = message;
-              element.classList.remove('text-red-500');
-              element.classList.add('text-green-500');
-              setTimeout(() => {
-                  currentView.classList.add('hidden');
-                  nextView.classList.remove('hidden');
-              }, 1200);
-        }
+                <p class="text-gray-400 mb-4">A system function is defined as f(x) = (3 times x) + 7. If the function returns a value of 52, what was the original input `x`?</p>
 
-        // --- Stage 1: Logic Puzzle ---
-        const logicAnswerInput = document.getElementById('logic-answer');
-        const submitLogicBtn = document.getElementById('submit-logic-btn');
-        const logicError = document.getElementById('logic-error');
+                <div class="flex gap-2 justify-center mt-6">
 
-        submitLogicBtn.addEventListener('click', () => {
-            if (parseInt(logicAnswerInput.value) === 15) {
-                // Unlock the audio context by playing and pausing on the first user interaction
-                winSound.play();
-                winSound.pause();
-                showSuccess(logicError, codePuzzleView, logicPuzzleView, 'ACCESS GRANTED');
-            } else {
-                showError(logicError, logicAnswerInput, 'ACCESS DENIED: Incorrect value.');
-            }
-        });
+                    <input id="logic-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="INPUT">
 
-        // --- Stage 2: Code Puzzle ---
-        const codeAnswerInput = document.getElementById('code-answer');
-        const submitCodeBtn = document.getElementById('submit-code-btn');
-        const codeError = document.getElementById('code-error');
+                    <button id="submit-logic-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Verify</button>
 
-        submitCodeBtn.addEventListener('click', () => {
-            // sum = 1+2+3+4+5 = 15
-            if (parseInt(codeAnswerInput.value) === 15) {
-                // Play the sound instantly upon correct answer
-                winSound.currentTime = 0; // Rewind sound to start
-                winSound.play();
-                
-                // Continue with the normal success flow
-                showSuccess(codeError, dsPuzzleView, codePuzzleView, 'EXECUTION COMPLETE');
-            } else {
-                showError(codeError, codeAnswerInput, 'RUNTIME ERROR');
-            }
-        });
+                </div>
 
-        // --- Stage 3: Data Structure Puzzle ---
-        const dsBtns = document.querySelectorAll('.ds-btn');
-        const dsError = document.getElementById('ds-error');
-        dsBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.dataset.value === 'Stack') {
-                    btn.classList.add('btn-correct');
-                    showSuccess(dsError, aptitudePuzzle1View, dsPuzzleView, 'PROTOCOL IDENTIFIED');
-                } else {
-                    dsError.textContent = 'INCORRECT. Principle mismatch.';
-                    dsError.classList.add('text-red-500');
-                    btn.classList.add('btn-incorrect');
-                    setTimeout(() => {
-                        dsError.textContent = '';
-                        btn.classList.remove('btn-incorrect');
-                    }, 1200);
-                }
-            });
-        });
+                <p id="logic-error" class="text-red-500 mt-3 h-5 text-sm tech-mono"></p>
 
-        // --- Stage 4: Anomaly Detection ---
-        const aptitude1Btns = document.querySelectorAll('.aptitude-btn');
-        const aptitude1Error = document.getElementById('aptitude-1-error');
-        aptitude1Btns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.dataset.value === 'HTTP') {
-                    btn.classList.add('btn-correct');
-                    showSuccess(aptitude1Error, aptitudePuzzle2View, aptitudePuzzle1View, 'ANOMALY IDENTIFIED');
-                } else {
-                    aptitude1Error.textContent = 'INCORRECT. Standard component detected.';
-                    aptitude1Error.classList.add('text-red-500');
-                    btn.classList.add('btn-incorrect');
-                    setTimeout(() => {
-                        aptitude1Error.textContent = '';
-                        btn.classList.remove('btn-incorrect');
-                    }, 1200);
-                }
-            });
-        });
+            </div>
 
-        // --- Stage 5: Pattern Recognition ---
-        const aptitude2AnswerInput = document.getElementById('aptitude-2-answer');
-        const submitAptitude2Btn = document.getElementById('submit-aptitude-2-btn');
-        const aptitude2Error = document.getElementById('aptitude-2-error');
-        submitAptitude2Btn.addEventListener('click', () => {
-            if (parseInt(aptitude2AnswerInput.value) === 10) {
-                 showSuccess(aptitude2Error, aptitudePuzzle3View, aptitudePuzzle2View, 'SEQUENCE VALIDATED');
-            } else {
-                showError(aptitude2Error, aptitude2AnswerInput, 'SEQUENCE MISMATCH');
-            }
-        });
 
-        // --- Stage 6: Code Logic (Cipher) ---
-        const aptitude3AnswerInput = document.getElementById('aptitude-3-answer');
-        const submitAptitude3Btn = document.getElementById('submit-aptitude-3-btn');
-        const aptitude3Error = document.getElementById('aptitude-3-error');
-        submitAptitude3Btn.addEventListener('click', () => {
-            if (aptitude3AnswerInput.value.trim().toUpperCase() === 'TZTUFN') {
-                showSuccess(aptitude3Error, memoryGameView, aptitudePuzzle3View, 'TRANSMISSION ACCEPTED');
-            } else {
-                showError(aptitude3Error, aptitude3AnswerInput, 'TRANSMISSION CORRUPTED');
-            }
-        });
 
-        // --- Stage 7: Memory Matrix ---
-        const gridContainer = document.getElementById('pattern-grid');
-        const startBtn = document.getElementById('startBtn');
-        const statusText = document.getElementById('status-text');
-        const levels = [3, 4, 5, 6]; 
-        let currentLevel = 0, sequence = [], userSequence = [], isPlayerTurn = false;
-        function createGrid() { for (let i = 0; i < 16; i++) { const c=document.createElement('div'); c.classList.add('grid-cell'); c.dataset.index=i; c.addEventListener('click',()=>handleCellClick(i)); gridContainer.appendChild(c); } } createGrid();
-        startBtn.addEventListener('click', startGame);
-        function startGame() { startBtn.classList.add('hidden'); statusText.classList.remove('hidden'); currentLevel = 0; startRound(); }
-        async function startRound() { isPlayerTurn=false; userSequence=[]; statusText.textContent=`Round ${currentLevel+1}/${levels.length}`; gridContainer.style.pointerEvents='none'; sequence=Array.from({length:levels[currentLevel]},()=>Math.floor(Math.random()*16)); await sleep(1e3); statusText.textContent='Watch carefully...'; await sleep(1e3); for(const i of sequence){ const c=gridContainer.children[i]; c.classList.add('active'); await sleep(500); c.classList.remove('active'); await sleep(250) } statusText.textContent='Your turn!'; isPlayerTurn=true; gridContainer.style.pointerEvents='auto' }
-        async function handleCellClick(i) { 
-            if(!isPlayerTurn) return; 
-            const c=gridContainer.children[i]; 
-            userSequence.push(i); 
-            if(userSequence[userSequence.length-1]!==sequence[userSequence.length-1]){ 
-                c.classList.add('incorrect'); 
-                statusText.textContent='Mistake! Try this round again.'; 
-                isPlayerTurn=false; 
-                await sleep(1500); 
-                c.classList.remove('incorrect'); 
-                startRound(); 
-                return 
-            } 
-            c.classList.add('correct'); 
-            await sleep(200); 
-            c.classList.remove('correct'); 
-            if(userSequence.length===sequence.length){ 
-                isPlayerTurn=false; 
-                statusText.textContent='Correct!'; 
-                await sleep(1e3); 
-                currentLevel++; 
-                if(currentLevel>=levels.length){ 
-                    memoryGameView.classList.add('hidden'); 
-                    winView.classList.remove('hidden');
-                    winSound.play();
-                }else{ 
-                    startRound();
-                } 
-            } 
-        }
-        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+            <div id="aptitude-puzzle-1-view" class="hidden">
 
-        // --- Matrix Background Effect ---
-        const canvas = document.getElementById('matrix-bg'), ctx = canvas.getContext('d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", charArray=chars.split(''), fontSize=16, columns=canvas.width/fontSize, drops=Array.from({length:columns}).fill(1);
-        function drawMatrix(){ ctx.fillStyle='rgba(13,17,23,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#00FF00'; ctx.font=fontSize+'px arial'; for(let i=0;i<drops.length;i++){ const t=charArray[Math.floor(Math.random()*charArray.length)]; ctx.fillText(t,i*fontSize,drops[i]*fontSize); if(drops[i]*fontSize>canvas.height&&Math.random()>.975)drops[i]=0; drops[i]++ } } setInterval(drawMatrix, 33);
-        
-        window.addEventListener('resize', () => { 
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            // No reload needed, just reset drops array for new width
-            const newColumns = canvas.width / fontSize;
-            while(drops.length < newColumns) drops.push(1);
-            while(drops.length > newColumns) drops.pop();
-        });
-    </script>
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 2: Anomaly Detection</h1>
+
+                <p class="text-gray-400 mb-4">One of these items is not like the others. Identify the anomaly in the system.</p>
+
+                <div id="aptitude-options" class="grid grid-cols-2 gap-4 mt-6">
+
+                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="CPU">CPU</button>
+
+                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="GPU">GPU</button>
+
+                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="RAM">RAM</button>
+
+                    <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="HTTP">HTTP</button>
+
+                </div>
+
+                <p id="aptitude-1-error" class="mt-4 h-5 text-sm tech-mono"></p>
+
+            </div>
+
+
+
+            <div id="aptitude-puzzle-2-view" class="hidden">
+
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 3: Pattern Recognition</h1>
+
+                <p class="text-gray-400 mb-4">Analyze the following numerical sequence and determine the next number: <br><span class="text-yellow-300 tech-mono text-lg mt-2 inline-block">7, 10, 8, 11, 9, 12, ?</span></p>
+
+                <div class="flex gap-2 justify-center mt-6">
+
+                    <input id="aptitude-2-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="ANSWER">
+
+                    <button id="submit-aptitude-2-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Submit</button>
+
+                </div>
+
+                <p id="aptitude-2-error" class="mt-3 h-5 text-sm tech-mono"></p>
+
+            </div>
+
+
+
+            <div id="aptitude-puzzle-3-view" class="hidden">
+
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 4: Code Logic</h1>
+
+                <p class="text-gray-400 mb-4">In a certain cipher, `NETWORK` is coded as `OFUXPSL`. Using the same logic, how would you encode the word `SYSTEM`?</p>
+
+                <div class="flex gap-2 justify-center mt-6">
+
+                    <input id="aptitude-3-answer" type="text" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-40 tech-mono text-lg uppercase focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="CIPHERTEXT">
+
+                    <button id="submit-aptitude-3-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Transmit</button>
+
+                </div>
+
+                <p id="aptitude-3-error" class="mt-3 h-5 text-sm tech-mono"></p>
+
+            </div>
+
+
+
+            <div id="memory-game-view" class="hidden">
+
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 5: Memory Matrix</h1>
+
+                <p class="text-gray-400 mb-4">The final security layer is a sequence lock. Watch the pattern and repeat it. Complete 4 rounds to pass.</p>
+
+                <div id="status-bar" class="h-8 mb-4">
+
+                    <button id="startBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Start Final Stage</button>
+
+                    <p id="status-text" class="hidden text-xl text-yellow-300 tech-mono"></p>
+
+                </div>
+
+                <div id="pattern-grid" class="pattern-grid w-[350px] mx-auto"></div>
+
+            </div>
+
+            
+
+            <div id="win-view" class="hidden text-center">
+
+                 <h1 class="text-4xl font-bold text-yellow-300 tech-mono mb-4">BREACH SUCCESSFUL!</h1>
+
+                 <p class="text-lg text-gray-300">You've bypassed all security layers.</p>
+
+                 <p class="mt-4 bg-black p-4 rounded-lg text-green-400">Show this message to a club organizer to claim your victory!</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        // --- Puzzle & Game Views ---
+
+        const logicPuzzleView = document.getElementById('logic-puzzle-view');
+
+        const aptitudePuzzle1View = document.getElementById('aptitude-puzzle-1-view');
+
+        const aptitudePuzzle2View = document.getElementById('aptitude-puzzle-2-view');
+
+        const aptitudePuzzle3View = document.getElementById('aptitude-puzzle-3-view');
+
+        const memoryGameView = document.getElementById('memory-game-view');
+
+        const winView = document.getElementById('win-view');
+
+        const winSound = document.getElementById('win-sound');
+
+        
+
+        // --- Generic Error Handler ---
+
+        function showError(element, inputElement, message) {
+
+            element.textContent = message;
+
+            element.classList.remove('text-green-500');
+
+            element.classList.add('text-red-500');
+
+            inputElement.classList.add('input-incorrect');
+
+            if (inputElement.tagName === 'INPUT') inputElement.value = '';
+
+
+
+            setTimeout(() => {
+
+                element.textContent = '';
+
+                inputElement.classList.remove('input-incorrect');
+
+            }, 1200);
+
+        }
+
+
+
+        function showSuccess(element, nextView, currentView, message) {
+
+             element.textContent = message;
+
+             element.classList.remove('text-red-500');
+
+             element.classList.add('text-green-500');
+
+             setTimeout(() => {
+
+                currentView.classList.add('hidden');
+
+                nextView.classList.remove('hidden');
+
+            }, 1200);
+
+        }
+
+
+
+        // --- Stage 1: Logic Puzzle ---
+
+        const logicAnswerInput = document.getElementById('logic-answer');
+
+        const submitLogicBtn = document.getElementById('submit-logic-btn');
+
+        const logicError = document.getElementById('logic-error');
+
+
+
+        submitLogicBtn.addEventListener('click', () => {
+
+            if (parseInt(logicAnswerInput.value) === 15) {
+
+                showSuccess(logicError, aptitudePuzzle1View, logicPuzzleView, 'ACCESS GRANTED');
+
+            } else {
+
+                showError(logicError, logicAnswerInput, 'ACCESS DENIED: Incorrect value.');
+
+            }
+
+        });
+
+
+
+        // --- Stage 2: Aptitude Puzzle 1 ---
+
+        const aptitude1Btns = document.querySelectorAll('.aptitude-btn');
+
+        const aptitude1Error = document.getElementById('aptitude-1-error');
+
+        aptitude1Btns.forEach(btn => {
+
+            btn.addEventListener('click', () => {
+
+                if (btn.dataset.value === 'HTTP') {
+
+                    btn.classList.add('btn-correct');
+
+                    showSuccess(aptitude1Error, aptitudePuzzle2View, aptitudePuzzle1View, 'ANOMALY IDENTIFIED');
+
+                } else {
+
+                    aptitude1Error.textContent = 'INCORRECT. Standard component detected.';
+
+                    aptitude1Error.classList.add('text-red-500');
+
+                    btn.classList.add('btn-incorrect');
+
+                    setTimeout(() => {
+
+                        aptitude1Error.textContent = '';
+
+                        btn.classList.remove('btn-incorrect');
+
+                    }, 1200);
+
+                }
+
+            });
+
+        });
+
+
+
+        // --- Stage 3: Aptitude Puzzle 2 ---
+
+        const aptitude2AnswerInput = document.getElementById('aptitude-2-answer');
+
+        const submitAptitude2Btn = document.getElementById('submit-aptitude-2-btn');
+
+        const aptitude2Error = document.getElementById('aptitude-2-error');
+
+        submitAptitude2Btn.addEventListener('click', () => {
+
+            if (parseInt(aptitude2AnswerInput.value) === 10) {
+
+                 showSuccess(aptitude2Error, aptitudePuzzle3View, aptitudePuzzle2View, 'SEQUENCE VALIDATED');
+
+            } else {
+
+                showError(aptitude2Error, aptitude2AnswerInput, 'SEQUENCE MISMATCH');
+
+            }
+
+        });
+
+
+
+        // --- Stage 4: Aptitude Puzzle 3 ---
+
+        const aptitude3AnswerInput = document.getElementById('aptitude-3-answer');
+
+        const submitAptitude3Btn = document.getElementById('submit-aptitude-3-btn');
+
+        const aptitude3Error = document.getElementById('aptitude-3-error');
+
+        submitAptitude3Btn.addEventListener('click', () => {
+
+            if (aptitude3AnswerInput.value.trim().toUpperCase() === 'TZTUFN') {
+
+                showSuccess(aptitude3Error, memoryGameView, aptitudePuzzle3View, 'TRANSMISSION ACCEPTED');
+
+            } else {
+
+                showError(aptitude3Error, aptitude3AnswerInput, 'TRANSMISSION CORRUPTED');
+
+            }
+
+        });
+
+
+
+        // --- Stage 5: Memory Matrix ---
+
+        const gridContainer = document.getElementById('pattern-grid');
+
+        const startBtn = document.getElementById('startBtn');
+
+        const statusText = document.getElementById('status-text');
+
+        const levels = [3, 4, 5, 6]; 
+
+        let currentLevel = 0, sequence = [], userSequence = [], isPlayerTurn = false;
+
+        function createGrid() { for (let i = 0; i < 16; i++) { const c=document.createElement('div'); c.classList.add('grid-cell'); c.dataset.index=i; c.addEventListener('click',()=>handleCellClick(i)); gridContainer.appendChild(c); } } createGrid();
+
+        startBtn.addEventListener('click', startGame);
+
+        function startGame() { startBtn.classList.add('hidden'); statusText.classList.remove('hidden'); currentLevel = 0; startRound(); }
+
+        async function startRound() { isPlayerTurn=false; userSequence=[]; statusText.textContent=`Round ${currentLevel+1}/${levels.length}`; gridContainer.style.pointerEvents='none'; sequence=Array.from({length:levels[currentLevel]},()=>Math.floor(Math.random()*16)); await sleep(1e3); statusText.textContent='Watch carefully...'; await sleep(1e3); for(const i of sequence){ const c=gridContainer.children[i]; c.classList.add('active'); await sleep(500); c.classList.remove('active'); await sleep(250) } statusText.textContent='Your turn!'; isPlayerTurn=true; gridContainer.style.pointerEvents='auto' }
+
+        async function handleCellClick(i) { 
+
+            if(!isPlayerTurn) return; 
+
+            const c=gridContainer.children[i]; 
+
+            userSequence.push(i); 
+
+            if(userSequence[userSequence.length-1]!==sequence[userSequence.length-1]){ 
+
+                c.classList.add('incorrect'); 
+
+                statusText.textContent='Mistake! Try this round again.'; 
+
+                isPlayerTurn=false; 
+
+                await sleep(1500); 
+
+                c.classList.remove('incorrect'); 
+
+                startRound(); 
+
+                return 
+
+            } 
+
+            c.classList.add('correct'); 
+
+            await sleep(200); 
+
+            c.classList.remove('correct'); 
+
+            if(userSequence.length===sequence.length){ 
+
+                isPlayerTurn=false; 
+
+                statusText.textContent='Correct!'; 
+
+                await sleep(1e3); 
+
+                currentLevel++; 
+
+                if(currentLevel>=levels.length){ 
+
+                    memoryGameView.classList.add('hidden'); 
+
+                    winView.classList.remove('hidden');
+
+                    winSound.play();
+
+                }else{ 
+
+                    startRound();
+
+                } 
+
+            } 
+
+        }
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+
+
+        // --- Matrix Background Effect ---
+
+        const canvas = document.getElementById('matrix-bg'), ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+        const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", charArray=chars.split(''), fontSize=16, columns=canvas.width/fontSize, drops=Array.from({length:columns}).fill(1);
+
+        function drawMatrix(){ ctx.fillStyle='rgba(13,17,23,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#00FF00'; ctx.font=fontSize+'px arial'; for(let i=0;i<drops.length;i++){ const t=charArray[Math.floor(Math.random()*charArray.length)]; ctx.fillText(t,i*fontSize,drops[i]*fontSize); if(drops[i]*fontSize>canvas.height&&Math.random()>.975)drops[i]=0; drops[i]++ } } setInterval(drawMatrix, 33);
+
+        
+
+        // **FIXED**: Removed the line below which caused the page to reload on mobile scroll
+
+        // window.addEventListener('resize', () => { location.reload(); });
+
+    </script>
+
 </body>
+
 </html>
