@@ -135,7 +135,7 @@ for (int i = 1; i <= 5; i++) {
         const winView = document.getElementById('win-view');
         const winSound = document.getElementById('win-sound');
         
-        // --- Generic Error Handler ---
+        // --- Generic Utility Functions ---
         function showError(element, inputElement, message) {
             element.textContent = message;
             element.classList.remove('text-green-500');
@@ -168,6 +168,9 @@ for (int i = 1; i <= 5; i++) {
 
         submitLogicBtn.addEventListener('click', () => {
             if (parseInt(logicAnswerInput.value) === 15) {
+                // Unlock the audio context by playing and pausing on the first user interaction
+                winSound.play();
+                winSound.pause();
                 showSuccess(logicError, codePuzzleView, logicPuzzleView, 'ACCESS GRANTED');
             } else {
                 showError(logicError, logicAnswerInput, 'ACCESS DENIED: Incorrect value.');
@@ -182,6 +185,11 @@ for (int i = 1; i <= 5; i++) {
         submitCodeBtn.addEventListener('click', () => {
             // sum = 1+2+3+4+5 = 15
             if (parseInt(codeAnswerInput.value) === 15) {
+                // Play the sound instantly upon correct answer
+                winSound.currentTime = 0; // Rewind sound to start
+                winSound.play();
+                
+                // Continue with the normal success flow
                 showSuccess(codeError, dsPuzzleView, codePuzzleView, 'EXECUTION COMPLETE');
             } else {
                 showError(codeError, codeAnswerInput, 'RUNTIME ERROR');
@@ -208,7 +216,7 @@ for (int i = 1; i <= 5; i++) {
             });
         });
 
-        // --- Stage 4: Aptitude Puzzle 1 (Anomaly) ---
+        // --- Stage 4: Anomaly Detection ---
         const aptitude1Btns = document.querySelectorAll('.aptitude-btn');
         const aptitude1Error = document.getElementById('aptitude-1-error');
         aptitude1Btns.forEach(btn => {
@@ -228,7 +236,7 @@ for (int i = 1; i <= 5; i++) {
             });
         });
 
-        // --- Stage 5: Aptitude Puzzle 2 (Sequence) ---
+        // --- Stage 5: Pattern Recognition ---
         const aptitude2AnswerInput = document.getElementById('aptitude-2-answer');
         const submitAptitude2Btn = document.getElementById('submit-aptitude-2-btn');
         const aptitude2Error = document.getElementById('aptitude-2-error');
@@ -240,7 +248,7 @@ for (int i = 1; i <= 5; i++) {
             }
         });
 
-        // --- Stage 6: Aptitude Puzzle 3 (Cipher) ---
+        // --- Stage 6: Code Logic (Cipher) ---
         const aptitude3AnswerInput = document.getElementById('aptitude-3-answer');
         const submitAptitude3Btn = document.getElementById('submit-aptitude-3-btn');
         const aptitude3Error = document.getElementById('aptitude-3-error');
@@ -295,7 +303,7 @@ for (int i = 1; i <= 5; i++) {
         function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
         // --- Matrix Background Effect ---
-        const canvas = document.getElementById('matrix-bg'), ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('matrix-bg'), ctx = canvas.getContext('d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", charArray=chars.split(''), fontSize=16, columns=canvas.width/fontSize, drops=Array.from({length:columns}).fill(1);
         function drawMatrix(){ ctx.fillStyle='rgba(13,17,23,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#00FF00'; ctx.font=fontSize+'px arial'; for(let i=0;i<drops.length;i++){ const t=charArray[Math.floor(Math.random()*charArray.length)]; ctx.fillText(t,i*fontSize,drops[i]*fontSize); if(drops[i]*fontSize>canvas.height&&Math.random()>.975)drops[i]=0; drops[i]++ } } setInterval(drawMatrix, 33);
