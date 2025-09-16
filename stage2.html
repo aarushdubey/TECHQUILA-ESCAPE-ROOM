@@ -31,7 +31,7 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white">
-    <audio id="win-sound" src="win_sound.mp3"></audio>
+    <audio id="win-sound" src="https://www.myinstants.com/media/sounds/cod-mw-level-up.mp3" preload="auto"></audio>
     <canvas id="matrix-bg" class="matrix-bg"></canvas>
     
     <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
@@ -47,8 +47,34 @@
                 <p id="logic-error" class="text-red-500 mt-3 h-5 text-sm tech-mono"></p>
             </div>
 
+            <div id="code-puzzle-view" class="hidden">
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 2: Code Execution</h1>
+                <p class="text-gray-400 mb-4">Analyze this C++ snippet and predict the final value of the variable `sum`.</p>
+                <pre class="bg-black/50 text-left p-3 rounded-md text-sm my-4"><code class="text-white">int sum = 0;
+for (int i = 1; i <= 5; i++) {
+    sum = sum + i;
+}</code></pre>
+                <div class="flex gap-2 justify-center mt-6">
+                    <input id="code-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="VALUE">
+                    <button id="submit-code-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Execute</button>
+                </div>
+                <p id="code-error" class="mt-3 h-5 text-sm tech-mono"></p>
+            </div>
+
+            <div id="ds-puzzle-view" class="hidden">
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 3: Data Structures</h1>
+                <p class="text-gray-400 mb-4">Which data structure operates on a "Last-In, First-Out" (LIFO) principle?</p>
+                <div id="ds-options" class="grid grid-cols-2 gap-4 mt-6">
+                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="Queue">Queue</button>
+                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="Stack">Stack</button>
+                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="Array">Array</button>
+                    <button class="ds-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="LinkedList">Linked List</button>
+                </div>
+                <p id="ds-error" class="mt-4 h-5 text-sm tech-mono"></p>
+            </div>
+
             <div id="aptitude-puzzle-1-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 2: Anomaly Detection</h1>
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 4: Anomaly Detection</h1>
                 <p class="text-gray-400 mb-4">One of these items is not like the others. Identify the anomaly in the system.</p>
                 <div id="aptitude-options" class="grid grid-cols-2 gap-4 mt-6">
                     <button class="aptitude-btn bg-gray-700 hover:bg-gray-600 p-3 rounded-lg tech-mono text-lg transition-colors" data-value="CPU">CPU</button>
@@ -60,7 +86,7 @@
             </div>
 
             <div id="aptitude-puzzle-2-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 3: Pattern Recognition</h1>
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 5: Pattern Recognition</h1>
                 <p class="text-gray-400 mb-4">Analyze the following numerical sequence and determine the next number: <br><span class="text-yellow-300 tech-mono text-lg mt-2 inline-block">7, 10, 8, 11, 9, 12, ?</span></p>
                 <div class="flex gap-2 justify-center mt-6">
                     <input id="aptitude-2-answer" type="number" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-32 tech-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="ANSWER">
@@ -70,7 +96,7 @@
             </div>
 
             <div id="aptitude-puzzle-3-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 4: Code Logic</h1>
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 6: Code Logic</h1>
                 <p class="text-gray-400 mb-4">In a certain cipher, `NETWORK` is coded as `OFUXPSL`. Using the same logic, how would you encode the word `SYSTEM`?</p>
                 <div class="flex gap-2 justify-center mt-6">
                     <input id="aptitude-3-answer" type="text" class="bg-gray-700 border border-gray-600 rounded px-4 py-2 text-center w-40 tech-mono text-lg uppercase focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="CIPHERTEXT">
@@ -80,7 +106,7 @@
             </div>
 
             <div id="memory-game-view" class="hidden">
-                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 5: Memory Matrix</h1>
+                <h1 class="text-2xl font-bold text-green-400 tech-mono mb-2">Stage 7: Memory Matrix</h1>
                 <p class="text-gray-400 mb-4">The final security layer is a sequence lock. Watch the pattern and repeat it. Complete 4 rounds to pass.</p>
                 <div id="status-bar" class="h-8 mb-4">
                     <button id="startBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Start Final Stage</button>
@@ -100,6 +126,8 @@
     <script>
         // --- Puzzle & Game Views ---
         const logicPuzzleView = document.getElementById('logic-puzzle-view');
+        const codePuzzleView = document.getElementById('code-puzzle-view');
+        const dsPuzzleView = document.getElementById('ds-puzzle-view');
         const aptitudePuzzle1View = document.getElementById('aptitude-puzzle-1-view');
         const aptitudePuzzle2View = document.getElementById('aptitude-puzzle-2-view');
         const aptitudePuzzle3View = document.getElementById('aptitude-puzzle-3-view');
@@ -112,23 +140,25 @@
             element.textContent = message;
             element.classList.remove('text-green-500');
             element.classList.add('text-red-500');
-            inputElement.classList.add('input-incorrect');
-            if (inputElement.tagName === 'INPUT') inputElement.value = '';
+            if (inputElement) {
+                inputElement.classList.add('input-incorrect');
+                if (inputElement.tagName === 'INPUT') inputElement.value = '';
+            }
 
             setTimeout(() => {
                 element.textContent = '';
-                inputElement.classList.remove('input-incorrect');
+                if (inputElement) inputElement.classList.remove('input-incorrect');
             }, 1200);
         }
 
         function showSuccess(element, nextView, currentView, message) {
-             element.textContent = message;
-             element.classList.remove('text-red-500');
-             element.classList.add('text-green-500');
-             setTimeout(() => {
-                currentView.classList.add('hidden');
-                nextView.classList.remove('hidden');
-            }, 1200);
+              element.textContent = message;
+              element.classList.remove('text-red-500');
+              element.classList.add('text-green-500');
+              setTimeout(() => {
+                  currentView.classList.add('hidden');
+                  nextView.classList.remove('hidden');
+              }, 1200);
         }
 
         // --- Stage 1: Logic Puzzle ---
@@ -138,13 +168,47 @@
 
         submitLogicBtn.addEventListener('click', () => {
             if (parseInt(logicAnswerInput.value) === 15) {
-                showSuccess(logicError, aptitudePuzzle1View, logicPuzzleView, 'ACCESS GRANTED');
+                showSuccess(logicError, codePuzzleView, logicPuzzleView, 'ACCESS GRANTED');
             } else {
                 showError(logicError, logicAnswerInput, 'ACCESS DENIED: Incorrect value.');
             }
         });
 
-        // --- Stage 2: Aptitude Puzzle 1 ---
+        // --- Stage 2: Code Puzzle ---
+        const codeAnswerInput = document.getElementById('code-answer');
+        const submitCodeBtn = document.getElementById('submit-code-btn');
+        const codeError = document.getElementById('code-error');
+
+        submitCodeBtn.addEventListener('click', () => {
+            // sum = 1+2+3+4+5 = 15
+            if (parseInt(codeAnswerInput.value) === 15) {
+                showSuccess(codeError, dsPuzzleView, codePuzzleView, 'EXECUTION COMPLETE');
+            } else {
+                showError(codeError, codeAnswerInput, 'RUNTIME ERROR');
+            }
+        });
+
+        // --- Stage 3: Data Structure Puzzle ---
+        const dsBtns = document.querySelectorAll('.ds-btn');
+        const dsError = document.getElementById('ds-error');
+        dsBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.value === 'Stack') {
+                    btn.classList.add('btn-correct');
+                    showSuccess(dsError, aptitudePuzzle1View, dsPuzzleView, 'PROTOCOL IDENTIFIED');
+                } else {
+                    dsError.textContent = 'INCORRECT. Principle mismatch.';
+                    dsError.classList.add('text-red-500');
+                    btn.classList.add('btn-incorrect');
+                    setTimeout(() => {
+                        dsError.textContent = '';
+                        btn.classList.remove('btn-incorrect');
+                    }, 1200);
+                }
+            });
+        });
+
+        // --- Stage 4: Aptitude Puzzle 1 (Anomaly) ---
         const aptitude1Btns = document.querySelectorAll('.aptitude-btn');
         const aptitude1Error = document.getElementById('aptitude-1-error');
         aptitude1Btns.forEach(btn => {
@@ -164,7 +228,7 @@
             });
         });
 
-        // --- Stage 3: Aptitude Puzzle 2 ---
+        // --- Stage 5: Aptitude Puzzle 2 (Sequence) ---
         const aptitude2AnswerInput = document.getElementById('aptitude-2-answer');
         const submitAptitude2Btn = document.getElementById('submit-aptitude-2-btn');
         const aptitude2Error = document.getElementById('aptitude-2-error');
@@ -176,7 +240,7 @@
             }
         });
 
-        // --- Stage 4: Aptitude Puzzle 3 ---
+        // --- Stage 6: Aptitude Puzzle 3 (Cipher) ---
         const aptitude3AnswerInput = document.getElementById('aptitude-3-answer');
         const submitAptitude3Btn = document.getElementById('submit-aptitude-3-btn');
         const aptitude3Error = document.getElementById('aptitude-3-error');
@@ -188,7 +252,7 @@
             }
         });
 
-        // --- Stage 5: Memory Matrix ---
+        // --- Stage 7: Memory Matrix ---
         const gridContainer = document.getElementById('pattern-grid');
         const startBtn = document.getElementById('startBtn');
         const statusText = document.getElementById('status-text');
@@ -236,8 +300,14 @@
         const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", charArray=chars.split(''), fontSize=16, columns=canvas.width/fontSize, drops=Array.from({length:columns}).fill(1);
         function drawMatrix(){ ctx.fillStyle='rgba(13,17,23,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#00FF00'; ctx.font=fontSize+'px arial'; for(let i=0;i<drops.length;i++){ const t=charArray[Math.floor(Math.random()*charArray.length)]; ctx.fillText(t,i*fontSize,drops[i]*fontSize); if(drops[i]*fontSize>canvas.height&&Math.random()>.975)drops[i]=0; drops[i]++ } } setInterval(drawMatrix, 33);
         
-        // **FIXED**: Removed the line below which caused the page to reload on mobile scroll
-        // window.addEventListener('resize', () => { location.reload(); });
+        window.addEventListener('resize', () => { 
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // No reload needed, just reset drops array for new width
+            const newColumns = canvas.width / fontSize;
+            while(drops.length < newColumns) drops.push(1);
+            while(drops.length > newColumns) drops.pop();
+        });
     </script>
 </body>
 </html>
